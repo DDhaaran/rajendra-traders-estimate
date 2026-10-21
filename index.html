@@ -1217,7 +1217,7 @@ function makeDoc(){
 function sharePdf(){
   var doc=makeDoc(); if(!doc) return;
   var file=new File([doc.output('blob')],pdfFileName(),{type:'application/pdf'});
-  navigator.share({files:[file],title:'Quotation'}).catch(function(e){ if(e&&e.name!=='AbortError') alert('Could not share: '+(e.message||e)); });
+  navigator.share({files:[file],title:'Quotation'}).then(function(){ startNewQuotation(); }).catch(function(e){ if(e&&e.name!=='AbortError') alert('Could not share: '+(e.message||e)); });
 }
 function downloadPdf(){
   var doc=makeDoc(); if(!doc) return;
@@ -1250,9 +1250,13 @@ $('pvClose').addEventListener('click',function(){ closeSheet('shPrev'); });
 $('pvShare').addEventListener('click',function(){ if(SHARE) sharePdf(); else downloadPdf(); });
 
 /* ================= new quotation ================= */
+function startNewQuotation(){
+  state=newState(); saveDraft(); syncInputs(); renderMain(); $('scroll').scrollTop=0;
+  closeSheet('shPrev');
+}
 $('btnNew').addEventListener('click',function(){
   if(!state.items.length && !state.customer.trim()){ hud('Already a blank quotation'); return; }
-  if(confirm('Clear this quotation and start a new one?')){ state=newState(); saveDraft(); syncInputs(); renderMain(); $('scroll').scrollTop=0; }
+  if(confirm('Clear this quotation and start a new one?')) startNewQuotation();
 });
 
 /* ================= settings ================= */
