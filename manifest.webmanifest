@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Quotation Maker - Rajendra Traders",
-  "short_name": "Quotations",
+  "name": "Weber Estimate",
+  "short_name": "Weber Estimate",
   "description": "Make GST quotations as PDF, offline.",
   "start_url": "./",
   "scope": "./",
