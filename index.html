@@ -13,6 +13,19 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script>
+(function(){
+  var ua=navigator.userAgent||'';
+  var platform=navigator.userAgentData&&navigator.userAgentData.platform||navigator.platform||'';
+  var android=/Android/i.test(ua)||/^Android$/i.test(platform);
+  var ios=/iPhone|iPad|iPod/i.test(ua)||(platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  document.documentElement.classList.add(android?'platform-android':ios?'platform-ios':'platform-web');
+  if(android){
+    var theme=document.querySelector('meta[name="theme-color"]');
+    if(theme) theme.content=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'#11140f':'#f7f8f4';
+  }
+})();
+</script>
 <title>Quotation Maker</title>
 <style>
 :root{
@@ -138,6 +151,75 @@ body.kbd .bar{display:none}
 textarea.mono{width:100%;border:0;background:var(--cell);border-radius:12px;padding:12px;font:12px/1.45 Menlo,Monaco,monospace;color:var(--label);outline:none;resize:none;-webkit-user-select:text}
 .hud{position:fixed;left:50%;bottom:calc(90px + var(--safe-b));transform:translateX(-50%) scale(.96);background:rgba(40,40,42,.92);color:#fff;padding:11px 18px;border-radius:22px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:100;font-size:15px;max-width:86vw;text-align:center}
 .hud.show{opacity:1;transform:translateX(-50%) scale(1)}
+
+/* ---------- Android / Material adaptation ---------- */
+.platform-android{
+  color-scheme:light dark;
+  --bg:#f7f8f4; --cell:#fff; --label:#191d18; --label2:#5f665c; --sep:#e1e4db;
+  --fill:#e9ede4; --tint:#46633b; --red:#ba1a1a; --barbg:#f7f8f4;
+  --font:Roboto,"Noto Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --md-outline:#73796e; --md-container:#f0f2eb; --md-primary-container:#d9e8d0; --md-on-primary:#fff;
+}
+@media (prefers-color-scheme:dark){
+  .platform-android{
+    --bg:#11140f; --cell:#1a1d18; --label:#e2e4dc; --label2:#c0c8ba; --sep:#343a31;
+    --fill:#292e27; --tint:#b3d39f; --red:#ffb4ab; --barbg:#1a1d18;
+    --md-outline:#899184; --md-container:#252a23; --md-primary-container:#33452d; --md-on-primary:#20371a;
+  }
+}
+.platform-android, .platform-android button, .platform-android input, .platform-android textarea{font-family:var(--font)}
+.platform-android .screen{max-width:600px}
+.platform-android .nav{min-height:64px;align-items:center;padding:calc(var(--safe-t) + 8px) 12px 8px 16px}
+.platform-android .nav h1{font-size:22px;line-height:1.3;font-weight:500;letter-spacing:0}
+.platform-android .nav .sub{font-size:13px}
+.platform-android .navbtns{gap:4px}
+.platform-android .iconbtn{width:48px;height:48px;border-radius:50%}
+.platform-android .gh{padding:0 24px 8px;margin-top:22px;font-size:14px;font-weight:600;letter-spacing:.1px;text-transform:none;color:var(--tint)}
+.platform-android .gf{padding:8px 24px 0}
+.platform-android .group{margin:0 16px;border:1px solid var(--sep);border-radius:16px;background:var(--cell);box-shadow:0 1px 2px rgba(25,29,24,.06)}
+.platform-android .group>*+*::before{left:16px;background:var(--sep)}
+.platform-android .group>label.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;align-items:center;min-height:72px;padding:10px 16px}
+.platform-android .group>label.row .lab{grid-column:1/-1;min-width:0;color:var(--label2);font-size:12px;line-height:1.2}
+.platform-android .group>label.row input{grid-column:1/-1;width:100%;min-height:44px;padding:10px 12px;text-align:left;border:1px solid var(--md-outline);border-bottom-width:2px;border-radius:4px 4px 0 0;background:var(--md-container);color:var(--label);outline:none}
+.platform-android .group>label.row input:focus{border-color:var(--tint);box-shadow:inset 0 -1px 0 var(--tint)}
+.platform-android .group>label.row input::placeholder{color:var(--label2)}
+.platform-android .group>label.row.has-suffix input{grid-column:1}
+.platform-android .group>label.row.has-suffix>span:last-child{grid-column:2;grid-row:2;color:var(--label2)}
+.platform-android .group>label.row.col{display:block;padding-top:12px}
+.platform-android .group>label.row.col textarea{width:100%;min-height:96px;margin-top:8px;padding:10px 12px;text-align:left;border:1px solid var(--md-outline);border-bottom-width:2px;border-radius:4px 4px 0 0;background:var(--md-container)}
+.platform-android .group>label.row.col textarea:focus{border-color:var(--tint);box-shadow:inset 0 -1px 0 var(--tint)}
+.platform-android .row{min-height:48px}
+.platform-android .row.tap:active,.platform-android .iconbtn:active{background:var(--fill)}
+.platform-android .item{min-height:68px;padding:12px 16px}
+.platform-android .item:active{background:var(--fill)}
+.platform-android .item .t1{font-weight:500}
+.platform-android .addrow{min-height:48px;margin:8px 12px;justify-content:center;border-radius:24px;background:var(--md-primary-container);color:var(--tint);font-weight:600}
+.platform-android .bar{padding:12px 16px calc(12px + var(--safe-b));background:var(--barbg);border-top:1px solid var(--sep);-webkit-backdrop-filter:none;backdrop-filter:none}
+.platform-android .cta{min-height:52px;border-radius:28px;background:var(--tint);color:var(--md-on-primary);font-size:16px;font-weight:600;box-shadow:0 2px 4px rgba(25,29,24,.16)}
+.platform-android .cta:active{opacity:.88}
+.platform-android .cta:disabled{box-shadow:none}
+.platform-android .search{min-height:48px;border:1px solid var(--sep);border-radius:24px;background:var(--md-container)}
+.platform-android .seg{min-height:40px;border-radius:20px;background:var(--md-container)}
+.platform-android .seg button{border-radius:18px;min-height:36px}
+.platform-android .seg button.on{background:var(--md-primary-container);color:var(--label);box-shadow:none}
+.platform-android .switch{width:52px;height:32px}
+.platform-android .switch span{border:2px solid var(--md-outline);border-radius:16px;background:var(--md-container)}
+.platform-android .switch span::after{top:3px;left:3px;width:22px;height:22px;background:var(--md-outline);box-shadow:none}
+.platform-android .switch input:checked+span{border-color:var(--tint);background:var(--tint)}
+.platform-android .switch input:checked+span::after{transform:translateX(20px);background:var(--md-on-primary)}
+.platform-android .sheet{border-radius:28px 28px 0 0;background:var(--bg)}
+.platform-android .sheet.action{padding:20px 16px calc(12px + var(--safe-b));background:var(--cell);border-radius:28px 28px 0 0}
+.platform-android .act-group{margin-top:8px;background:transparent;border-radius:0}
+.platform-android .act-group .t{padding:4px 8px 12px;text-align:left;font-size:18px;font-weight:500;color:var(--label);border:0}
+.platform-android .act-group button{min-height:48px;margin:4px 0;padding:12px 20px;border:0;border-radius:24px;background:var(--md-primary-container);color:var(--label);text-align:center;font-size:15px;font-weight:600}
+.platform-android .act-group button:active{opacity:.86}
+.platform-android #actShare,.platform-android #actDownload{background:var(--tint);color:var(--md-on-primary)}
+.platform-android #actPreview,.platform-android #actCancel{background:transparent;color:var(--tint)}
+.platform-android .snav{min-height:64px;padding:8px 16px}
+.platform-android .snav .ttl{font-size:20px;font-weight:500}
+.platform-android .snav button{min-height:48px;padding:10px 12px;color:var(--tint);font-size:14px;font-weight:600}
+.platform-android .act-group button:focus-visible,.platform-android .iconbtn:focus-visible,.platform-android .cta:focus-visible,.platform-android .snav button:focus-visible{outline:3px solid var(--tint);outline-offset:2px}
+.platform-android .hud{bottom:calc(88px + var(--safe-b));border-radius:8px;background:#30332e;color:#f4f4ee;padding:14px 16px;text-align:left}
 </style>
 </head>
 <body>
@@ -158,7 +240,7 @@ textarea.mono{width:100%;border:0;background:var(--cell);border-radius:12px;padd
     <div class="group">
       <label class="row"><span class="lab">Name</span><input id="iCustomer" placeholder="Customer name" autocomplete="off" autocapitalize="words" enterkeyhint="done"></label>
       <label class="row"><span class="lab">Date</span><input id="iDate" type="date"></label>
-      <label class="row"><span class="lab">Valid for</span><input id="iValidity" inputmode="numeric" placeholder="30"><span>days</span></label>
+      <label class="row has-suffix"><span class="lab">Valid for</span><input id="iValidity" inputmode="numeric" placeholder="30"><span>days</span></label>
       <label class="row"><span class="lab">Contact person</span><input id="iPerson" autocomplete="off" autocapitalize="words" enterkeyhint="done"></label>
       <label class="row"><span class="lab">Contact no.</span><input id="iNo" inputmode="tel" autocomplete="off"></label>
     </div>
@@ -255,7 +337,7 @@ textarea.mono{width:100%;border:0;background:var(--cell);border-radius:12px;padd
     <div class="group">
       <label class="row"><span class="lab">Contact person</span><input data-k="contact_person" autocomplete="off"></label>
       <label class="row"><span class="lab">Contact no.</span><input data-k="contact_no" inputmode="tel" autocomplete="off"></label>
-      <label class="row"><span class="lab">Valid for</span><input data-k="validity_days" inputmode="numeric"><span>days</span></label>
+      <label class="row has-suffix"><span class="lab">Valid for</span><input data-k="validity_days" inputmode="numeric"><span>days</span></label>
       <label class="row"><span class="lab">GST %</span><input data-k="gst_rate" inputmode="decimal"></label>
     </div>
 
