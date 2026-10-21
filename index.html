@@ -65,6 +65,8 @@ svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke
 .row{display:flex;align-items:center;min-height:46px;padding:0 16px;gap:12px}
 .row .lab{flex:0 0 auto;min-width:110px}
 .row input,.row textarea{flex:1;min-width:0;text-overflow:ellipsis;border:0;background:transparent;text-align:right;padding:12px 0;outline:none}
+.profile-value{flex:1;min-width:0;text-align:right;overflow-wrap:anywhere}
+.profile-address{padding:8px 0 10px;line-height:1.4;white-space:pre-line;overflow-wrap:anywhere}
 .row input.left,.row textarea.left{text-align:left}
 .row textarea{resize:none;padding:11px 0;line-height:1.35}
 .row.col{flex-direction:column;align-items:stretch;gap:0;padding-top:12px;padding-bottom:4px}
@@ -322,16 +324,16 @@ textarea.mono{width:100%;border:0;background:var(--cell);border-radius:12px;padd
 <div class="sheet" id="shSet" aria-hidden="true">
   <div class="snav"><span style="min-width:64px"></span><div class="ttl">Settings</div><button class="r" id="setDone">Done</button></div>
   <div class="sbody">
-    <div class="gh" style="margin-top:8px">Business (printed on the PDF)</div>
+    <div class="gh" style="margin-top:8px">Business profile (managed by app owner)</div>
     <div class="group">
-      <label class="row"><span class="lab">Name</span><input data-k="business_name" autocomplete="off"></label>
-      <label class="row"><span class="lab">Line below</span><input data-k="since_line" autocomplete="off"></label>
-      <label class="row"><span class="lab">Tagline</span><input data-k="tagline" autocomplete="off"></label>
-      <label class="row"><span class="lab">Title</span><input data-k="doc_title" autocomplete="off"></label>
-      <label class="row"><span class="lab">GSTIN</span><input data-k="gstin" autocomplete="off" autocapitalize="characters"></label>
-      <label class="row col"><span class="lab">Address</span><textarea data-k="address" rows="4" autocomplete="off"></textarea></label>
+      <div class="row"><span class="lab">Name</span><span class="profile-value" id="profileBusinessName"></span></div>
+      <div class="row"><span class="lab">Line below</span><span class="profile-value" id="profileSinceLine"></span></div>
+      <div class="row"><span class="lab">Tagline</span><span class="profile-value" id="profileTagline"></span></div>
+      <div class="row"><span class="lab">Title</span><span class="profile-value" id="profileDocTitle"></span></div>
+      <div class="row"><span class="lab">GSTIN</span><span class="profile-value" id="profileGstin"></span></div>
+      <div class="row col"><span class="lab">Address</span><div class="profile-address" id="profileAddress"></div></div>
     </div>
-    <div class="gf">Each line of the address is printed on its own line.</div>
+    <div class="gf">These details are fixed for all app users. Only the app owner can change them by updating the app source.</div>
 
     <div class="gh">For new quotations</div>
     <div class="group">
@@ -911,6 +913,7 @@ var DEFAULTS = {
 };
 var UNITS=['bags','pkts','nos'];
 var LS_S='rajendra_quote_settings_v1', LS_P='rajendra_quote_products_v1', LS_D='rajendra_quote_draft_v2';
+var OWNER_PROFILE_KEYS=['business_name','since_line','tagline','doc_title','gstin','address'];
 
 function lsGet(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ window.localStorage.setItem(k,v); return true; }catch(e){ return false; } }
@@ -920,7 +923,7 @@ function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,
 
 var settings=(function(){
   var s={}, k; for(k in DEFAULTS) s[k]=DEFAULTS[k];
-  try{ var saved=JSON.parse(lsGet(LS_S)||'{}'); for(k in saved) if(k in DEFAULTS) s[k]=saved[k]; }catch(e){}
+  try{ var saved=JSON.parse(lsGet(LS_S)||'{}'); for(k in saved) if(k in DEFAULTS && OWNER_PROFILE_KEYS.indexOf(k)<0) s[k]=saved[k]; }catch(e){}
   return s;
 })();
 function saveSettings(){ lsSet(LS_S,JSON.stringify(settings)); }
@@ -1348,6 +1351,12 @@ function fillSettings(){
     var k=el.getAttribute('data-k');
     el.value=(k==='terms')?(settings.terms||[]).join('\n'):settings[k];
   });
+  $('profileBusinessName').textContent=settings.business_name;
+  $('profileSinceLine').textContent=settings.since_line;
+  $('profileTagline').textContent=settings.tagline;
+  $('profileDocTitle').textContent=settings.doc_title;
+  $('profileGstin').textContent=settings.gstin;
+  $('profileAddress').textContent=settings.address;
   $('setColour').checked=!!settings.show_colour;
   $('prodCount').textContent=products.length+' items';
 }
