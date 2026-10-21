@@ -1420,6 +1420,11 @@ if(window.visualViewport){
 
 /* offline support */
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  var hadServiceWorkerController=!!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    if(hadServiceWorkerController) window.location.reload();
+    hadServiceWorkerController=true;
+  });
   window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
 }
 
