@@ -1021,7 +1021,6 @@ function loadDraft(){
 function saveDraft(){ lsSet(LS_D,JSON.stringify(state)); }
 state=loadDraft();
 
-/* ================= PDF (jsPDF) ================= */
 /* ================= PDF (drawn directly with jsPDF: no print window) ================= */
 var C_DARK=[31,31,31], C_DARK2=[43,45,49], C_MID=[60,64,70], C_LIGHT=[244,245,245], C_WHITE=[255,255,255];
 
@@ -1345,7 +1344,6 @@ $('btnNew').addEventListener('click',function(){
 });
 
 /* ================= settings ================= */
-var SET_KEYS=['business_name','since_line','tagline','doc_title','gstin','address','contact_person','contact_no','validity_days','gst_rate'];
 function fillSettings(){
   Array.prototype.forEach.call($('shSet').querySelectorAll('[data-k]'),function(el){
     var k=el.getAttribute('data-k');
@@ -1430,7 +1428,6 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
 
 /* ================= start ================= */
 syncInputs(); renderMain();
-window.__q={state:function(){return state;},calcQuote:calcQuote,products:function(){return products;}};
 })();
 </script>
 </body>
