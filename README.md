@@ -1,4 +1,4 @@
-# Quotation Maker
+# Weber Estimate
 
 GST quotation maker for Rajendra Traders. Works offline on iPhone, Mac and Android.
 Creates a PDF with Indian number format, rounded grand total and the Weber price list built in.
