@@ -222,9 +222,43 @@ textarea.mono{width:100%;border:0;background:var(--cell);border-radius:12px;padd
 .platform-android .snav button{min-height:48px;padding:10px 12px;color:var(--tint);font-size:14px;font-weight:600}
 .platform-android .act-group button:focus-visible,.platform-android .iconbtn:focus-visible,.platform-android .cta:focus-visible,.platform-android .snav button:focus-visible{outline:3px solid var(--tint);outline-offset:2px}
 .platform-android .hud{bottom:calc(88px + var(--safe-b));border-radius:8px;background:#30332e;color:#f4f4ee;padding:14px 16px;text-align:left}
+
+.auth-gate{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--bg);overflow:auto}
+.auth-gate[hidden]{display:none}
+.auth-card{width:100%;max-width:420px;padding:28px;background:var(--cell);border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.auth-card h1{margin:0 0 8px;font-size:28px}
+.auth-card p{color:var(--label2);line-height:1.45}
+.auth-card label{display:block;margin:18px 0 0;color:var(--label2);font-size:14px}
+.auth-card input{display:block;width:100%;margin-top:7px;padding:13px 12px;border:1px solid var(--sep);border-radius:10px;background:var(--bg);outline:none}
+.auth-card input[hidden]{display:none}
+.auth-card input:focus{border-color:var(--tint)}
+.auth-card button{border:0;border-radius:10px;padding:12px;background:transparent;color:var(--tint);font-weight:600;cursor:pointer}
+.auth-card .auth-primary{width:100%;margin-top:20px;background:var(--tint);color:#fff}
+.auth-card button:disabled{opacity:.5}
+.auth-actions{display:flex;justify-content:space-between;gap:8px;margin-top:8px}
+.auth-message{min-height:22px;margin-bottom:0;font-size:14px}
+.auth-message.error{color:var(--red)}
 </style>
 </head>
 <body>
+
+<div class="auth-gate" id="authGate">
+  <section class="auth-card" aria-labelledby="authTitle">
+    <h1 id="authTitle">Sign in to Quotations</h1>
+    <p id="authHint">Use your email address and password to continue.</p>
+    <form id="authForm">
+      <label>Email address<input id="authEmail" type="email" autocomplete="username" required></label>
+      <label>Password<input id="authPassword" type="password" autocomplete="current-password" required></label>
+      <button class="auth-primary" id="authSubmit" type="submit">Sign in</button>
+    </form>
+    <div class="auth-actions">
+      <button id="authSignUp" type="button">Create account</button>
+      <button id="authReset" type="button">Forgot password?</button>
+      <button id="authBack" type="button" hidden>Back to sign in</button>
+    </div>
+    <p class="auth-message" id="authMessage" role="status" aria-live="polite"></p>
+  </section>
+</div>
 
 <!-- ============ MAIN SCREEN ============ -->
 <div class="screen" id="screen">
@@ -355,6 +389,11 @@ textarea.mono{width:100%;border:0;background:var(--cell);border-radius:12px;padd
 
     <div class="gh">Price list</div>
     <div class="group"><div class="row tap" id="openProducts"><span>Edit product list</span><span class="val" style="color:var(--label2)" id="prodCount"></span><span class="chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span></div></div>
+    <div class="gh">Account</div>
+    <div class="group">
+      <div class="row"><span class="lab">Signed in as</span><span class="profile-value" id="accountEmail"></span></div>
+      <button class="row tap center blue" id="btnSignOut" type="button" style="width:100%;border:0;background:transparent">Sign out</button>
+    </div>
     <div class="gf" style="text-align:center;margin-top:22px">Quotation Maker &middot; works offline &middot; your quotations stay on this device</div>
   </div>
 </div>
@@ -915,9 +954,12 @@ var UNITS=['bags','pkts','nos'];
 var LS_S='rajendra_quote_settings_v1', LS_P='rajendra_quote_products_v1', LS_D='rajendra_quote_draft_v2';
 var OWNER_PROFILE_KEYS=['business_name','since_line','tagline','doc_title','gstin','address'];
 
-function lsGet(k){ try{ return window.localStorage.getItem(k); }catch(e){ return null; } }
-function lsSet(k,v){ try{ window.localStorage.setItem(k,v); return true; }catch(e){ return false; } }
-function lsDel(k){ try{ window.localStorage.removeItem(k); }catch(e){} }
+function scopedStorageKey(k){
+  try{ var userId=window.localStorage.getItem('rq_active_user_id'); return userId?'rq_user_'+encodeURIComponent(userId)+'_'+k:k; }catch(e){ return k; }
+}
+function lsGet(k){ try{ return window.localStorage.getItem(scopedStorageKey(k)); }catch(e){ return null; } }
+function lsSet(k,v){ try{ window.localStorage.setItem(scopedStorageKey(k),v); return true; }catch(e){ return false; } }
+function lsDel(k){ try{ window.localStorage.removeItem(scopedStorageKey(k)); }catch(e){} }
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
@@ -1430,5 +1472,7 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
 syncInputs(); renderMain();
 })();
 </script>
+<script src="auth-config.js"></script>
+<script src="auth.js"></script>
 </body>
 </html>
